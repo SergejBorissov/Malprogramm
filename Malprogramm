@@ -1,0 +1,219 @@
+
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class Malen extends Frame implements Runnable, MouseMotionListener,
+        ActionListener, WindowListener {
+
+    private MenuBar menuBar;
+    private Menu bild;
+    private MenuItem schwarzerHintergrund;
+    private MenuItem weißerHintergrund;
+    private MenuItem beenden;
+    private Menu farben;
+    private MenuItem rot;
+    private MenuItem gruen;
+    private MenuItem blau;
+    private MenuItem cyan;
+    private MenuItem gelb;
+    private MenuItem magenta;
+    private MenuItem schwarz;
+    private MenuItem weiß;
+
+    private Thread mal;
+    private Image buffer;
+    private Graphics bg;
+
+    private int xnew, ynew;
+    private int xold, yold;
+    private boolean malt;
+    private Color farbe;
+
+
+    public static void main(String[] args) {
+        Malen malen = new Malen();
+        malen.start();
+        malen.setTitle("Malprogramm");
+        malen.setSize(500,500);
+        malen.setVisible(true);
+    }
+
+    public Malen(){
+        menuBar = new MenuBar();
+        bild = new Menu("Bild");
+        schwarzerHintergrund = new MenuItem("Schwarzer Hintergrund");
+        weißerHintergrund = new MenuItem("Weißer Hintergrund");
+        beenden = new MenuItem("Beenden");
+        farben = new Menu("Farbe");
+        rot = new MenuItem("Rot");
+        gruen = new MenuItem("Grün");
+        blau = new MenuItem("Blau");
+        cyan = new MenuItem("Cyan");
+        magenta = new MenuItem("Magenta");
+        gelb = new MenuItem("Gelb");
+        schwarz = new MenuItem("Schwarz");
+        weiß = new MenuItem("Weiß");
+
+        bild.add(schwarzerHintergrund);
+        bild.add(weißerHintergrund);
+        bild.add(beenden);
+        menuBar.add(bild);
+        farben.add(rot);
+        farben.add(gruen);
+        farben.add(blau);
+        farben.add(cyan);
+        farben.add(magenta);
+        farben.add(gelb);
+        farben.add(schwarz);
+        farben.add(weiß);
+        menuBar.add(farben);
+        this.setMenuBar(menuBar);
+
+        this.addMouseMotionListener(this);
+        schwarzerHintergrund.addActionListener(this);
+        weißerHintergrund.addActionListener(this);
+        beenden.addActionListener(this);
+        rot.addActionListener(this);
+        gruen.addActionListener(this);
+        blau.addActionListener(this);
+        cyan.addActionListener(this);
+        magenta.addActionListener(this);
+        gelb.addActionListener(this);
+        schwarz.addActionListener(this);
+        weiß.addActionListener(this);
+        this.addWindowListener(this);
+
+        xnew = 0;
+        ynew = 0;
+        xold = 0;
+        yold = 0;
+        malt = false;
+        farbe = Color.WHITE;
+
+    }
+
+    public void start(){
+        mal = new Thread(this);
+        mal.start();
+    }
+
+    @Override
+    public void run() {
+        while(true){
+            try{
+                mal.sleep(3);
+            }
+            catch(InterruptedException e){
+            }
+            repaint();
+        }
+    }
+
+    public void update(Graphics g){
+        if(buffer == null){
+            buffer = createImage(500,500);
+            bg = buffer.getGraphics();
+        }
+        paint(bg);
+        g.drawImage(buffer, 0,0, this);
+    }
+
+    public void paint (Graphics g){
+        if(malt){
+            g.setColor(farbe);
+            g.drawLine(xold, yold, xnew, ynew);
+            g.drawLine(xold + 1, yold , xnew + 1, ynew);
+            g.drawLine(xold, yold + 1, xnew, ynew + 1);
+            g.drawLine(xold +1, yold + 1, xnew +1, ynew +1);
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        malt = false;
+        xold = e.getX();
+        yold = e.getY();
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if(malt){
+            // Alten x und y Wert merken
+            xold = xnew;
+            yold = ynew;
+        } else{
+            // AB hier neu malen
+            xold = e.getX();
+            ynew = e.getY();
+        }
+        malt = true;
+        // Neuen x und y Wert setzen
+        xnew = e.getX();
+        ynew = e.getY();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if(cmd.equals("Schwarzer Hintergrund")){
+            bg.setColor(Color.BLACK);
+            bg.fillRect(0,0,500,500);
+        }
+        if(cmd.equals("Weißer Hintergrund")){
+            bg.setColor(Color.WHITE);
+            bg.fillRect(0,0,500,500);
+        }
+        if(cmd.equals("Beenden")){
+            this.dispose();
+        }
+        if(cmd.equals("Rot")){
+            farbe = Color.RED;
+        }
+        if(cmd.equals("Grün")){
+            farbe = Color.GREEN;
+        }
+        if(cmd.equals("Blau")){
+            farbe = Color.BLUE;
+        }
+        if(cmd.equals("Cyan")){
+            farbe = Color.CYAN;
+        }
+        if(cmd.equals("Magenta")){
+            farbe = Color.MAGENTA;
+        }
+        if(cmd.equals("Gelb")){
+            farbe = Color.YELLOW;
+        }
+        if(cmd.equals("Schwarz")){
+            farbe = Color.BLACK;
+        }
+        if(cmd.equals("Weiß")){
+            farbe = Color.WHITE;
+        }
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+       this.dispose();
+    }
+    @Override
+    public void windowClosed(WindowEvent e) {
+      System.exit(0);
+    }
+    @Override
+    public void windowOpened(WindowEvent e) {
+    }
+    @Override
+    public void windowIconified(WindowEvent e) {
+    }
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+    }
+    @Override
+    public void windowActivated(WindowEvent e) {
+    }
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+    }
+}
