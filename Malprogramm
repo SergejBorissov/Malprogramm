@@ -3,6 +3,12 @@
 import java.awt.*;
 import java.awt.event.*;
 
+
+/**
+ * @author: Sergej Borissov
+ *
+ */
+
 public class Malen extends Frame implements Runnable, MouseMotionListener,
         ActionListener, WindowListener {
 
